@@ -1,0 +1,7 @@
+fastapi==0.143.0
+uvicorn[standard]==0.38.0
+sqlalchemy==2.1.4
+pydantic==2.12.5
+# Postgres driver — needed for migrations/migrate.py and DATABASE_URLs
+# pointing at Postgres. Tests run on sqlite (stdlib) and don't need it.
+psycopg[binary]==3.2.12
