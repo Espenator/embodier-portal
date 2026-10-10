@@ -1,0 +1,22 @@
+/* Embodier portal — live data layer styles. Loaded only in live mode. */
+.live-state { animation: show .28s ease; }
+.live-skeleton {
+  min-height: 180px;
+  background: linear-gradient(100deg, var(--panel) 40%, var(--panel2) 50%, var(--panel) 60%);
+  background-size: 200% 100%;
+  animation: liveShimmer 1.4s infinite linear;
+}
+@keyframes liveShimmer { to { background-position: -200% 0; } }
+.live-error, .live-empty { padding: 28px; text-align: center; }
+.live-error .btn { margin-top: 12px; }
+.live-detail { font-size: 13px; margin-top: 8px; }
+.live-form { padding: 20px; margin-bottom: 18px; }
+.live-form .row { display: flex; gap: 10px; flex-wrap: wrap; }
+.live-form input {
+  flex: 1 1 200px; padding: 12px 14px; border-radius: 12px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit;
+}
+.live-form input::placeholder { color: var(--muted); }
+.live-exchange { padding: 28px; }
+.live-exchange p { margin-bottom: 12px; }
+#sideNav button[data-tab="broker"] { border: 1px dashed var(--line); }

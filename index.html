@@ -114,4 +114,33 @@ function signupFlow(step){if(step===1){modal('<div class="pad signup-welcome"><d
 
 render();
 })();
-</script></body></html>
+</script>
+<!-- Embodier portal LIVE wiring. config.js is optional: when it sets apiBase,
+     the live data layer (js/api.js + js/session.js + js/portal-live.js) takes over
+     the prototype's sections with real backend data. Without apiBase the
+     prototype runs untouched in demo mode. -->
+<script src="config.js" onerror="window.EMBODIER_PORTAL_CONFIG={apiBase:'',loginUrl:'/login'}"></script>
+<script src="js/api.js"></script>
+<script src="js/session.js"></script>
+<script src="js/portal-live.js"></script>
+<link rel="stylesheet" href="js/portal-live.css">
+<script>
+(function () {
+  var cfg = window.EMBODIER_PORTAL_CONFIG || { apiBase: "", loginUrl: "/login" };
+  if (!cfg.apiBase) return; // demo mode — prototype untouched
+  var Sess = window.EmbodierPortalSession;
+  var api = new window.EmbodierPortalApi({
+    apiBase: cfg.apiBase,
+    getToken: function () { return Sess.resolveToken(); },
+    setToken: function (t) { Sess.storeToken(t); },
+    onUnauthorized: function () { Sess.clearToken(); }
+  });
+  window.EmbodierPortalLive.boot({
+    api: api,
+    session: Sess,
+    config: cfg,
+    document: document,
+  });
+})();
+</script>
+</body></body></html>
