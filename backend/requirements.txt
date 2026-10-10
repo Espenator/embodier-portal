@@ -5,7 +5,3 @@ pydantic==2.12.5
 # Postgres driver — needed for migrations/migrate.py and DATABASE_URLs
 # pointing at Postgres. Tests run on sqlite (stdlib) and don't need it.
 psycopg[binary]==3.2.12
-# Test deps — the documented test workflow (python -m pytest tests/)
-# runs on a fresh install, so these are pinned here.
-httpx==0.28.1
-pytest==9.1.1
