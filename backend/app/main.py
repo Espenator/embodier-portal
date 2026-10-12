@@ -5,7 +5,7 @@ from fastapi import FastAPI
 
 from .config import settings
 from .db import init_db
-from .routers import broker, member
+from .routers import broker, course, member
 
 
 def create_app() -> FastAPI:
@@ -13,6 +13,7 @@ def create_app() -> FastAPI:
     init_db()  # dev convenience: ensure tables exist on boot (idempotent)
     app.include_router(member.router)
     app.include_router(broker.router)
+    app.include_router(course.router)
 
     @app.get("/healthz")
     def healthz():

@@ -71,6 +71,15 @@ OTP verification so the member exists before first login.
 | GET | /api/broker/pipeline | bearer+broker | stage counts + deals per stage |
 | GET | /api/broker/commissions | bearer+broker | commission status + expected amounts |
 | GET | /api/broker/buybox | bearer+broker | buy-box criteria |
+| GET | /api/course/status | bearer | enrollment + per-module progress + certified flag |
+| GET | /api/course/modules | bearer | course manifest + module states (no answer keys) |
+| GET | /api/course/modules/{id} | bearer | lessons + quiz questions/options (no answer keys) |
+| POST | /api/course/lessons | bearer | body `{"module_id","lessons_done"}` → reading progress |
+| POST | /api/course/quiz | bearer | body `{"module_id","answers[]"}` → server-graded, pass = 4/5 |
+| GET | /api/course/certificate | bearer | 404 until all modules passed → `{certificate_id, certified_at}` |
+| GET | /api/course/referrals | bearer | `{referral_code, signups, referred[]}` + program terms |
+| POST | /api/internal/course/enroll | brain secret | enroll after Stripe webhook (verified phone). Idempotent |
+| POST | /api/internal/course/referral | brain secret | attribute a signup to a referrer code. Idempotent |
 
 ## Tier personalization
 
@@ -88,6 +97,18 @@ routers. Unknown tiers fall back to the Inner Circle voice.
   states plainly that it is not a purchase; the $100 refundable deposit
   is collected only when projects are offered.
 - No yield promises, no fee figures, no live-sale claims anywhere.
+- Course: all copy is education-framed ("learn how the pros invest").
+  Quiz grading is server-side; answer keys never leave the API. The
+  referral reward (5% of referred buyers' token purchases, forever) is
+  stated factually with the pre-DASP note that no token sale is live.
+
+## Course content
+
+`course/content/` holds the course manifest (`course.json`) plus one JSON
+per module with EN+ES lessons and 5-question quizzes. The API serves a
+sanitized view (no answer keys); grading happens in
+`POST /api/course/quiz`. The Docker image bundles `course/` (build from
+the repo root: `docker build -t portal-api -f backend/Dockerfile .`).
 
 ## Tiers
 
@@ -99,13 +120,24 @@ routers. Unknown tiers fall back to the Inner Circle voice.
 .venv/bin/python -m pytest tests/ -q
 ```
 
-22 tests, sqlite in-memory (no Postgres needed). Postgres behavior is
+49 tests, sqlite in-memory (no Postgres needed). Postgres behavior is
 covered by `migrations/*.sql`, which are plain Postgres DDL.
+
+Frontend (vanilla JS, Node built-in test runner):
+
+```bash
+node --test "tests-js/**/*.test.js"
+```
+
+12 tests covering the course UI helpers, renderers, share-link builders,
+and the compliance scanner over all bundled course content.
 
 ## Docker
 
+Build from the repository root (the image bundles `course/content/`):
+
 ```bash
-docker build -t portal-api .
+docker build -t portal-api -f backend/Dockerfile .
 docker run -p 8000:8000 \
   -e DATABASE_URL="postgresql+psycopg://user:pass@host/db" \
   -e BRAIN_SHARED_SECRET="..." portal-api

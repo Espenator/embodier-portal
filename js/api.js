@@ -8,6 +8,13 @@
  *   POST {apiBase}/api/interests        {offering_id, note}
  *   GET  {apiBase}/api/documents        -> {title, documents[]}
  *   GET  {apiBase}/api/broker/deals | /pipeline | /commissions | /buybox
+ *   GET  {apiBase}/api/course/status    -> enrollment + module progress
+ *   GET  {apiBase}/api/course/modules   -> course manifest + module states
+ *   GET  {apiBase}/api/course/modules/{id} -> lessons + quiz (no answers)
+ *   POST {apiBase}/api/course/lessons   {module_id, lessons_done}
+ *   POST {apiBase}/api/course/quiz      {module_id, answers[]} -> graded
+ *   GET  {apiBase}/api/course/certificate -> {certificate_id, certified_at}
+ *   GET  {apiBase}/api/course/referrals -> {referral_code, signups, referred[]}
  *
  * Auth: Authorization: Bearer <redacted> (HMAC session token minted by the Brain
  * after phone+OTP verification). 401 anywhere -> onUnauthorized() so the app can
@@ -113,6 +120,34 @@
   PortalApi.prototype.brokerPipeline = function () { return this._request("/api/broker/pipeline"); };
   PortalApi.prototype.brokerCommissions = function () { return this._request("/api/broker/commissions"); };
   PortalApi.prototype.brokerBuybox = function () { return this._request("/api/broker/buybox"); };
+
+  // --- course ($100 Investment Real Estate Course) -----------------------------
+  PortalApi.prototype.courseStatus = function () {
+    return this._request("/api/course/status");
+  };
+  PortalApi.prototype.courseModules = function () {
+    return this._request("/api/course/modules");
+  };
+  PortalApi.prototype.courseModule = function (moduleId) {
+    return this._request("/api/course/modules/" + encodeURIComponent(moduleId));
+  };
+  PortalApi.prototype.saveLessons = function (moduleId, lessonsDone) {
+    return this._request("/api/course/lessons", {
+      method: "POST",
+      body: { module_id: moduleId, lessons_done: lessonsDone },
+    });
+  };
+  PortalApi.prototype.submitQuiz = function (moduleId, answers) {
+    return this._request("/api/course/quiz", {
+      method: "POST", body: { module_id: moduleId, answers: answers },
+    });
+  };
+  PortalApi.prototype.courseCertificate = function () {
+    return this._request("/api/course/certificate");
+  };
+  PortalApi.prototype.courseReferrals = function () {
+    return this._request("/api/course/referrals");
+  };
 
   return PortalApi;
 });

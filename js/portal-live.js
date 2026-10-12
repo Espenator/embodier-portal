@@ -329,8 +329,16 @@
         ]).then(function (r) {
           return { deals: r[0], pipeline: r[1], commissions: r[2], buybox: r[3] };
         });
+      } else if (id === "learn") {
+        // Real course UI (js/course.js) replaces the prototype-only tab.
+        if (root.EmbodierCourse && root.EmbodierCourse.mountLearnTab) {
+          root.EmbodierCourse.mountLearnTab({
+            api: state.api, config: state.config, document: doc,
+          });
+        }
+        return;
       } else {
-        return; // unknown tab (e.g. prototype-only 'learn') — leave prototype content
+        return; // unknown tab — leave prototype content
       }
       p.then(function (data) {
         state.cache[id] = data;
@@ -356,6 +364,14 @@
       else if (id === "broker") html = renderBroker(data, lang);
       el.innerHTML = html;
       bindSectionActions(el, id);
+      if (id === "home" && root.EmbodierCourse &&
+        root.EmbodierCourse.mountHomeOffer) {
+        try {
+          root.EmbodierCourse.mountHomeOffer({
+            api: state.api, config: state.config, document: doc,
+          });
+        } catch (e) {}
+      }
       if (root.lucide && root.lucide.createIcons) { try { root.lucide.createIcons(); } catch (e) {} }
     }
 
@@ -427,7 +443,6 @@
       var id = btn.getAttribute("data-tab");
       setTimeout(function () {
         ensureBrokerNav();
-        if (id === "learn") return; // prototype-only content
         loadSection(id);
       }, 0);
     }, true);

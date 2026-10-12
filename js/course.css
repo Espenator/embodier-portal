@@ -1,0 +1,53 @@
+/* Course UI — Tesla-clean, mobile-first. Complements js/portal-live.css. */
+
+/* Offer card (home tab) */
+.course-offer{padding:26px;margin:22px 0;position:relative;overflow:hidden}
+.course-offer:after{content:'';position:absolute;width:200px;height:200px;border:1px solid color-mix(in srgb,var(--gold) 40%,transparent);border-radius:50%;right:-60px;top:-80px;box-shadow:0 0 0 30px color-mix(in srgb,var(--gold) 7%,transparent)}
+.course-offer h2{font-size:30px;margin:6px 0 8px}
+.course-bullets{list-style:none;margin:14px 0;padding:0;display:grid;gap:8px}
+.course-bullets li{color:var(--body);font-size:13px}
+.course-bullets li::first-letter{color:var(--green)}
+
+/* Progress */
+.course-progress{padding:18px 20px;margin:18px 0}
+.course-progress .progress{height:8px;margin-top:12px}
+
+/* Module rows */
+.listrow[data-course-module]{cursor:pointer}
+.listrow[data-course-module]:hover{background:color-mix(in srgb,var(--gold) 6%,transparent)}
+
+/* Lesson cards */
+.course-lesson{padding:22px;margin:14px 0;box-shadow:none}
+.course-lesson h3{font-size:19px;margin-bottom:10px}
+.course-lesson p{line-height:1.65;color:var(--body);font-size:14px;margin:0 0 12px}
+.course-lesson.read{border-color:color-mix(in srgb,var(--green) 35%,var(--line))}
+
+/* Quiz */
+.course-quizq{padding:18px;margin:14px 0;box-shadow:none}
+.course-quizq b{display:block;margin-bottom:12px;line-height:1.4}
+.quiz-option{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border:1px solid var(--line);border-radius:10px;margin:8px 0;cursor:pointer;font-size:13px;line-height:1.45}
+.quiz-option:hover{border-color:var(--gold)}
+.quiz-option input{margin-top:3px;accent-color:var(--gold);flex:0 0 auto}
+.quiz-option:has(input:checked){border-color:var(--gold);background:color-mix(in srgb,var(--gold) 9%,transparent)}
+
+/* Certificate */
+.cert-card{padding:38px 28px;text-align:center;margin:20px 0;position:relative;overflow:hidden}
+.cert-card:before{content:'';position:absolute;inset:10px;border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);border-radius:12px;pointer-events:none}
+.cert-seal{font-size:52px;margin:10px 0}
+.cert-card h2{font-size:32px;margin:8px 0}
+.cert-id{margin:20px 0}
+.cert-id .code{font-size:22px}
+
+/* Referral card */
+.referral{padding:24px;margin:18px 0}
+.referral h2{margin:4px 0 8px}
+
+@media(max-width:780px){
+  .course-offer{padding:20px}
+  .course-offer h2{font-size:25px}
+  .course-lesson{padding:18px}
+  .cert-card{padding:30px 18px}
+}
+@media(prefers-reduced-motion:reduce){
+  .course-offer:after{display:none}
+}
