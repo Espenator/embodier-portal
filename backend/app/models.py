@@ -144,3 +144,101 @@ class BrokerBuyBox(Base):
     updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True),
                                                     default=_now,
                                                     onupdate=_now)
+
+
+class CourseEnrollment(Base):
+    """$100 course enrollment. Created by the Brain's Stripe webhook via the
+    internal enroll endpoint (keyed by verified phone)."""
+    __tablename__ = "course_enrollments"
+
+    phone: Mapped[str] = mapped_column(String(32),
+                                       ForeignKey("members.phone"),
+                                       primary_key=True)
+    source: Mapped[str] = mapped_column(String(64), nullable=False,
+                                        default="stripe")
+    enrolled_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True),
+                                                     default=_now)
+    completed_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True),
+                                                      nullable=True)
+
+
+class CourseModuleProgress(Base):
+    """Per-member, per-module progress: lessons read + quiz state."""
+    __tablename__ = "course_module_progress"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True,
+                                    autoincrement=True)
+    phone: Mapped[str] = mapped_column(String(32),
+                                       ForeignKey("members.phone"),
+                                       nullable=False, index=True)
+    module_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    lessons_done: Mapped[int] = mapped_column(Integer, nullable=False,
+                                              default=0)
+    quiz_passed: Mapped[bool] = mapped_column(Boolean, nullable=False,
+                                              default=False)
+    quiz_best: Mapped[int] = mapped_column(Integer, nullable=False,
+                                           default=0)
+    quiz_attempts: Mapped[int] = mapped_column(Integer, nullable=False,
+                                               default=0)
+    updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True),
+                                                    default=_now,
+                                                    onupdate=_now)
+
+
+class CourseQuizAttempt(Base):
+    """Immutable record of each quiz submission (audit trail)."""
+    __tablename__ = "course_quiz_attempts"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True,
+                                    autoincrement=True)
+    phone: Mapped[str] = mapped_column(String(32),
+                                       ForeignKey("members.phone"),
+                                       nullable=False, index=True)
+    module_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    score: Mapped[int] = mapped_column(Integer, nullable=False)
+    total: Mapped[int] = mapped_column(Integer, nullable=False)
+    passed: Mapped[bool] = mapped_column(Boolean, nullable=False,
+                                         default=False)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True),
+                                                    default=_now)
+
+
+class CourseCertificate(Base):
+    """Issued once all modules are quiz-passed. Deterministic ID per phone."""
+    __tablename__ = "course_certificates"
+
+    phone: Mapped[str] = mapped_column(String(32),
+                                       ForeignKey("members.phone"),
+                                       primary_key=True)
+    certificate_id: Mapped[str] = mapped_column(String(64), nullable=False,
+                                                unique=True)
+    certified_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True),
+                                                      default=_now)
+
+
+class ReferralEvent(Base):
+    """A signup attributed to a member's referral code (recorded by the Brain
+    at enrollment time via the internal endpoint)."""
+    __tablename__ = "referral_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True,
+                                    autoincrement=True)
+    referrer_phone: Mapped[str] = mapped_column(String(32),
+                                                ForeignKey("members.phone"),
+                                                nullable=False, index=True)
+    referred_phone: Mapped[str] = mapped_column(String(64), nullable=False)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True),
+                                                    default=_now)
+
+
+class ReferralCode(Base):
+    """Stable personal referral code per member (issued lazily)."""
+    __tablename__ = "referral_codes"
+
+    code: Mapped[str] = mapped_column(String(32), primary_key=True)
+    phone: Mapped[str] = mapped_column(String(32),
+                                       ForeignKey("members.phone"),
+                                       nullable=False, unique=True,
+                                       index=True)
+    created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True),
+                                                    default=_now)

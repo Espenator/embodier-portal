@@ -5,11 +5,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /srv/portal
 
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app/ ./app/
-COPY migrations/ ./migrations/
+COPY backend/app/ ./app/
+COPY backend/migrations/ ./migrations/
+COPY course/ ./course/
 
 EXPOSE 8000
 
